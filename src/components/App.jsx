@@ -1,24 +1,38 @@
 import exampleVideoData from '../../../src/data/exampleVideoData.js';
 import VideoPlayer from './VideoPlayer.js';
 import VideoList from './VideoList.js';
+import Search from './Search.js';
+import searchYouTube from '../lib/searchYouTube.js';
 var App = () => {
-  const [selectedVideo, setVideo] = React.useState(exampleVideoData[0]);
+  const [videos, setVideos] = React.useState([]);
+  const [selectedVideo, setSelectedVideo] = React.useState({ id: {videoId: ''}, snippet: {title: '', discription: ''}});
   const selectVideo = (newVideo) => {
-    setVideo(newVideo);
+    setSelectedVideo(newVideo);
   };
+  const selectVideos = (newList) => {
+    setVideos(newList);
+  };
+  React.useEffect(() => {
+    searchYouTube(' ', data => {
+      selectVideos(data);
+      selectVideo(data[0]);
+    });
+  }, []);
+
+  console.log(videos);
   return (
     <div>
       <nav className="navbar">
         <div className="col-md-6 offset-md-3">
-          <div><h5><em>search</em> view goes here</h5></div>
+          <div><Search videos={videos} selectVideos={selectVideos} searchYouTube={searchYouTube} /></div>
         </div>
       </nav>
       <div className="row">
         <div className="col-md-7">
-          <div><VideoPlayer video={selectedVideo} /><h5><em>videoPlayer</em> view goes here</h5></div>
+          <div><VideoPlayer video={selectedVideo} /></div>
         </div>
         <div className="col-md-5">
-          <div><VideoList videos={exampleVideoData} selctVideo={selectVideo}/><h5><em>videoList</em> view goes here</h5></div>
+          <div><VideoList videos={videos} selectVideo={selectVideo}/></div>
         </div>
       </div>
     </div>
